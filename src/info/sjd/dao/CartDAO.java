@@ -5,27 +5,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import info.sjd.entity.User;
+import info.sjd.entity.Cart;
 
-public class UserDAO {
+public class CartDAO {
 
-	public static User create(User user) {
+	public static Cart create(Cart cart) {
 
-		String sql = "INSERT INTO users (login, user_password, first_name, last_name) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO carts (cart_id, creation_time, user_login) VALUES (?,?,?)";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			
-			statement.setString(1, user.getLogin());
-			statement.setString(2, user.getPassword());
-			statement.setString(3, user.getFirstName());
-			statement.setString(4, user.getLastName());
+			statement.setInt(1, cart.getCartId());
+			statement.setLong(2, cart.getCreationTime());
+			statement.setString(3, cart.getUserLogin());
 
 			statement.executeUpdate();
 
-			return user;
+			return cart;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -35,9 +33,9 @@ public class UserDAO {
 		return null;
 	}
 
-	public static User getOne(String login) {
+	public static Cart getOne(Integer cartId) {
 
-		String sql = "SELECT * FROM users WHERE login=?";
+		String sql = "SELECT * FROM carts WHERE cart_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 		ResultSet rSet = null;
@@ -45,20 +43,18 @@ public class UserDAO {
 		try {
 
 			statement = connection.prepareStatement(sql);
-			
-			statement.setString(1, login);
+			statement.setInt(1, cartId);
 
 			rSet = statement.executeQuery();
 
 			while (rSet.next()) {
-				User user = new User();
+				Cart cart = new Cart();
 
-				user.setLogin(rSet.getString("login"));
-				user.setPassword(rSet.getString("user_password"));
-				user.setFirstName(rSet.getString("first_name"));
-				user.setLastName(rSet.getString("last_name"));
+				cart.setCartId(rSet.getInt("cart_id"));
+				cart.setCreationTime(rSet.getLong("creation_time"));
+				cart.setUserLogin(rSet.getString("user_login"));
 
-				return user;
+				return cart;
 			}
 			statement.executeUpdate();
 
@@ -71,22 +67,21 @@ public class UserDAO {
 		return null;
 	}
 
-	public static User update(User user) {
+	public static Cart update(Cart cart) {
 
-		String sql = "UPDATE users SET user_password=?, first_name=?, last_name=? WHERE login=?";
+		String sql = "UPDATE carts SET creation_time=?, user_login=? WHERE cart_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, user.getPassword());
-			statement.setString(2, user.getFirstName());
-			statement.setString(3, user.getLastName());
-			statement.setString(4, user.getLogin());
+			statement.setLong(1, cart.getCreationTime());
+			statement.setString(2, cart.getUserLogin());
+			statement.setInt(3, cart.getCartId());
 
 			statement.executeUpdate();
 
-			return user;
+			return cart;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -96,14 +91,14 @@ public class UserDAO {
 		return null;
 	}
 
-	public static void delete(String login) {
-		String sql = "DELETE FROM users WHERE login=?";
+	public static void delete(Integer cartId) {
+		String sql = "DELETE FROM carts WHERE cart_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, login);
+			statement.setInt(1, cartId);
 
 			statement.executeUpdate();
 

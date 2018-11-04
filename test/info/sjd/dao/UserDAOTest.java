@@ -40,14 +40,4 @@ class UserDAOTest {
 		assertEquals("123456789", uncheckedUserFromDB.getPassword());
 	}
 
-//	@Ignore
-//	@Test
-//	void testUpdate() {
-//	}
-//
-//	@Ignore
-//	@Test
-//	void testDelete() {
-//	}
-
 }

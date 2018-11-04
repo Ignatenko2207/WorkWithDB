@@ -5,113 +5,113 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import info.sjd.entity.User;
+import info.sjd.entity.Order;
 
-public class UserDAO {
+public class OrderDAO {
 
-	public static User create(User user) {
+	public static Order create(Order order) {
 
-		String sql = "INSERT INTO users (login, user_password, first_name, last_name) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO orders (order_id, article_id, amount, cart_id) VALUES (?,?,?,?)";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-
+		
 		try {
 			statement = connection.prepareStatement(sql);
-			
-			statement.setString(1, user.getLogin());
-			statement.setString(2, user.getPassword());
-			statement.setString(3, user.getFirstName());
-			statement.setString(4, user.getLastName());
+			statement.setInt(1, order.getOrderId());
+			statement.setString(2, order.getArticleId());
+			statement.setInt(3, order.getAmount());
+			statement.setInt(4, order.getCartId());
 
 			statement.executeUpdate();
-
-			return user;
+			
+			return order;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-
+		
+		
 		return null;
 	}
 
-	public static User getOne(String login) {
+	public static Order getOne(Integer orderId) {
 
-		String sql = "SELECT * FROM users WHERE login=?";
+		String sql = "SELECT * FROM orders WHERE order_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 		ResultSet rSet = null;
-
+		
 		try {
-
-			statement = connection.prepareStatement(sql);
 			
-			statement.setString(1, login);
-
+			statement = connection.prepareStatement(sql);
+			statement.setInt(1, orderId);
+			
 			rSet = statement.executeQuery();
-
+			
 			while (rSet.next()) {
-				User user = new User();
+				Order order = new Order();
+				
+				order.setOrderId(rSet.getInt("order_id"));
+				order.setArticleId(rSet.getString("article_id"));
+				order.setAmount(rSet.getInt("amount"));
+				order.setCartId(rSet.getInt("cart_id"));
 
-				user.setLogin(rSet.getString("login"));
-				user.setPassword(rSet.getString("user_password"));
-				user.setFirstName(rSet.getString("first_name"));
-				user.setLastName(rSet.getString("last_name"));
-
-				return user;
+				return order;
 			}
 			statement.executeUpdate();
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement, rSet);
 		}
-
+		
 		return null;
 	}
 
-	public static User update(User user) {
-
-		String sql = "UPDATE users SET user_password=?, first_name=?, last_name=? WHERE login=?";
+	public static Order update(Order order) {
+		
+		String sql = "UPDATE orders SET article_id=?, amount=?, cart_id=? WHERE order_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-
+		
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, user.getPassword());
-			statement.setString(2, user.getFirstName());
-			statement.setString(3, user.getLastName());
-			statement.setString(4, user.getLogin());
+			statement.setString(1, order.getArticleId());
+			statement.setInt(2, order.getAmount());
+			statement.setInt(3, order.getCartId());
+			statement.setInt(4, order.getOrderId());
 
 			statement.executeUpdate();
-
-			return user;
+			
+			return order;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-
+		
+		
 		return null;
 	}
 
-	public static void delete(String login) {
-		String sql = "DELETE FROM users WHERE login=?";
+	public static void delete(Integer orderId) {
+		String sql = "DELETE FROM orders WHERE login=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-
+		
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, login);
-
+			statement.setInt(1, orderId);
+			
 			statement.executeUpdate();
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-
+		
 	}
 }

@@ -5,27 +5,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import info.sjd.entity.User;
+import info.sjd.entity.Good;
 
-public class UserDAO {
+public class GoodDAO {
 
-	public static User create(User user) {
+	public static Good create(Good good) {
 
-		String sql = "INSERT INTO users (login, user_password, first_name, last_name) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO goods (article_id, good_name, price) VALUES (?,?,?)";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			
-			statement.setString(1, user.getLogin());
-			statement.setString(2, user.getPassword());
-			statement.setString(3, user.getFirstName());
-			statement.setString(4, user.getLastName());
+			statement.setString(1, good.getArticleId());
+			statement.setString(2, good.getGoodName());
+			statement.setInt(3, good.getPrice());
 
 			statement.executeUpdate();
 
-			return user;
+			return good;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -35,9 +33,9 @@ public class UserDAO {
 		return null;
 	}
 
-	public static User getOne(String login) {
+	public static Good getOne(String articleId) {
 
-		String sql = "SELECT * FROM users WHERE login=?";
+		String sql = "SELECT * FROM goods WHERE article_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 		ResultSet rSet = null;
@@ -45,20 +43,18 @@ public class UserDAO {
 		try {
 
 			statement = connection.prepareStatement(sql);
-			
-			statement.setString(1, login);
+			statement.setString(1, articleId);
 
 			rSet = statement.executeQuery();
 
 			while (rSet.next()) {
-				User user = new User();
+				Good good = new Good();
 
-				user.setLogin(rSet.getString("login"));
-				user.setPassword(rSet.getString("user_password"));
-				user.setFirstName(rSet.getString("first_name"));
-				user.setLastName(rSet.getString("last_name"));
+				good.setArticleId(rSet.getString("article_id"));
+				good.setGoodName(rSet.getString("good_name"));
+				good.setPrice(rSet.getInt("price"));
 
-				return user;
+				return good;
 			}
 			statement.executeUpdate();
 
@@ -71,22 +67,21 @@ public class UserDAO {
 		return null;
 	}
 
-	public static User update(User user) {
+	public static Good update(Good good) {
 
-		String sql = "UPDATE users SET user_password=?, first_name=?, last_name=? WHERE login=?";
+		String sql = "UPDATE goods SET good_name=?, price=? WHERE article_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, user.getPassword());
-			statement.setString(2, user.getFirstName());
-			statement.setString(3, user.getLastName());
-			statement.setString(4, user.getLogin());
-
+			
+			statement.setString(1, good.getGoodName());
+			statement.setInt(2, good.getPrice());
+			statement.setString(3, good.getArticleId());
 			statement.executeUpdate();
 
-			return user;
+			return good;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -96,14 +91,14 @@ public class UserDAO {
 		return null;
 	}
 
-	public static void delete(String login) {
-		String sql = "DELETE FROM users WHERE login=?";
+	public static void delete(String articleId) {
+		String sql = "DELETE FROM goods WHERE article_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 
 		try {
 			statement = connection.prepareStatement(sql);
-			statement.setString(1, login);
+			statement.setString(1, articleId);
 
 			statement.executeUpdate();
 
