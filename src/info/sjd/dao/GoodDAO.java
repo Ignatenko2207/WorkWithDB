@@ -66,7 +66,7 @@ public class GoodDAO {
 
 		return null;
 	}
-
+	
 	public static Good update(Good good) {
 
 		String sql = "UPDATE goods SET good_name=?, price=? WHERE article_id=?";

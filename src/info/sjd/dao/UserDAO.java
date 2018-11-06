@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import info.sjd.entity.User;
 
@@ -71,6 +73,50 @@ public class UserDAO {
 		return null;
 	}
 
+	
+	public static List<User> getAllBySellPeriod(Long startPeriod, Long endPeriod){
+		
+		String sql = "SELECT login, user_password, first_name, last_name "
+				+ "FROM users u JOIN carts c ON u.login = c.user_login "
+				+ "WHERE c.creation_time>? AND c.creation_time<?";
+		Connection connection = ConnectionToDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet rSet = null;
+
+		try {
+
+			statement = connection.prepareStatement(sql);
+			
+			statement.setLong(1, startPeriod);
+			statement.setLong(2, endPeriod);
+
+			rSet = statement.executeQuery();
+
+			List<User> users = new ArrayList<User>();
+			while (rSet.next()) {
+				User user = new User();
+
+				user.setLogin(rSet.getString("login"));
+				user.setPassword(rSet.getString("user_password"));
+				user.setFirstName(rSet.getString("first_name"));
+				user.setLastName(rSet.getString("last_name"));
+			
+				users.add(user);
+			}
+			
+			return users;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionToDB.closeConnection(connection, statement, rSet);
+		}
+		
+		
+		return null;
+	}
+	
+	
 	public static User update(User user) {
 
 		String sql = "UPDATE users SET user_password=?, first_name=?, last_name=? WHERE login=?";

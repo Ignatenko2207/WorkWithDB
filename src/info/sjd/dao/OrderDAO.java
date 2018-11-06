@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import info.sjd.entity.Order;
 
@@ -69,7 +70,7 @@ public class OrderDAO {
 		
 		return null;
 	}
-
+	
 	public static Order update(Order order) {
 		
 		String sql = "UPDATE orders SET article_id=?, amount=?, cart_id=? WHERE order_id=?";
