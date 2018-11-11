@@ -13,6 +13,8 @@ class UserDAOTest {
 	
 	static User user = null;
 
+	Object obj;
+	
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		user = new User();

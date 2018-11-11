@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConnectionToDBTest {
 
     @Test
-    void getConnection() {
+    void testGetConnection() {
         Connection connection = ConnectionToDB.getConnection();
 
         assertNotNull(connection);

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import info.sjd.entity.Cart;
 
@@ -56,7 +58,6 @@ public class CartDAO {
 
 				return cart;
 			}
-			statement.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -108,5 +109,40 @@ public class CartDAO {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
 
+	}
+
+	public static List<Cart> getAllByUser(String userLogin) {
+		
+		List<Cart> carts = new ArrayList<>();
+		
+		String sql = "SELECT * FROM carts WHERE user_login=?";
+		Connection connection = ConnectionToDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet rSet = null;
+
+		try {
+
+			statement = connection.prepareStatement(sql);
+			statement.setString(1, userLogin);
+
+			rSet = statement.executeQuery();
+
+			while (rSet.next()) {
+				Cart cart = new Cart();
+
+				cart.setCartId(rSet.getInt("cart_id"));
+				cart.setCreationTime(rSet.getLong("creation_time"));
+				cart.setUserLogin(rSet.getString("user_login"));
+
+				carts.add(cart);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionToDB.closeConnection(connection, statement, rSet);
+		}
+
+		return carts;
 	}
 }

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import info.sjd.entity.Order;
 
@@ -15,7 +14,7 @@ public class OrderDAO {
 		String sql = "INSERT INTO orders (order_id, article_id, amount, cart_id) VALUES (?,?,?,?)";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-		
+
 		try {
 			statement = connection.prepareStatement(sql);
 			statement.setInt(1, order.getOrderId());
@@ -24,15 +23,14 @@ public class OrderDAO {
 			statement.setInt(4, order.getCartId());
 
 			statement.executeUpdate();
-			
+
 			return order;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-		
-		
+
 		return null;
 	}
 
@@ -42,17 +40,17 @@ public class OrderDAO {
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 		ResultSet rSet = null;
-		
+
 		try {
-			
+
 			statement = connection.prepareStatement(sql);
 			statement.setInt(1, orderId);
-			
+
 			rSet = statement.executeQuery();
-			
+
 			while (rSet.next()) {
 				Order order = new Order();
-				
+
 				order.setOrderId(rSet.getInt("order_id"));
 				order.setArticleId(rSet.getString("article_id"));
 				order.setAmount(rSet.getInt("amount"));
@@ -60,23 +58,22 @@ public class OrderDAO {
 
 				return order;
 			}
-			statement.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement, rSet);
 		}
-		
+
 		return null;
 	}
-	
+
 	public static Order update(Order order) {
-		
+
 		String sql = "UPDATE orders SET article_id=?, amount=?, cart_id=? WHERE order_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-		
+
 		try {
 			statement = connection.prepareStatement(sql);
 			statement.setString(1, order.getArticleId());
@@ -85,15 +82,14 @@ public class OrderDAO {
 			statement.setInt(4, order.getOrderId());
 
 			statement.executeUpdate();
-			
+
 			return order;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-		
-		
+
 		return null;
 	}
 
@@ -101,18 +97,56 @@ public class OrderDAO {
 		String sql = "DELETE FROM orders WHERE login=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
-		
+
 		try {
 			statement = connection.prepareStatement(sql);
 			statement.setInt(1, orderId);
-			
+
 			statement.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionToDB.closeConnection(connection, statement);
 		}
-		
+
 	}
+
+	public static Integer getSumOfOrdersByUserAndTime(Long startPeriod, Long endPeriod, String userLogin) {
+		String sql = 	"SELECT SUM(o.amount) " + 
+						"FROM orders o " + 
+						"JOIN carts cr ON o.cart_id = cr.cart_id " + 
+						"JOIN goods gd ON o.article_id = gd.article_id " + 
+						"JOIN users u ON u.login = cr.user_login " + 
+						"WHERE cr.creation_time >? " + 
+						"AND cr.creation_time <? " + 
+						"AND u.login = '"+userLogin+"'";
+
+		Connection connection = ConnectionToDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet rSet = null;
+
+		try {
+
+			statement = connection.prepareStatement(sql);
+			statement.setLong(1, startPeriod);
+			statement.setLong(2, endPeriod);
+//			statement.setString(3, userLogin);
+
+			rSet = statement.executeQuery();
+
+			while (rSet.next()) {
+
+				return rSet.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionToDB.closeConnection(connection, statement, rSet);
+		}
+
+		return null;
+	}
+
 }

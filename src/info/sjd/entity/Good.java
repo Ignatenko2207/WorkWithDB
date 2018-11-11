@@ -25,5 +25,4 @@ public class Good {
 		this.price = price;
 	}
 	
-	
 }
