@@ -70,6 +70,41 @@ public class OrderDAO {
 		
 		return null;
 	}
+
+	public static Integer getSumByUserAndPeriod(String userLogin, Long startPeriod, Long endPeriod) {
+
+		String sql = "SELECT SUM(gd.price*o.amount) AS results FROM orders o " +
+				"JOIN carts cr ON o.cart_id=cr.cart_id " +
+				"JOIN goods gd ON o.article_id=gd.article_id " +
+				"WHERE cr.creation_time>? " +
+				"AND  cr.creation_time<? " +
+				"AND cr.user_login=?";
+
+		ResultSet rSet = null;
+
+		try (
+				Connection connection = ConnectionToDB.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql);
+			){
+
+			statement.setLong(1, startPeriod);
+			statement.setLong(2, endPeriod);
+			statement.setString(3, userLogin);
+
+			rSet = statement.executeQuery();
+
+			while (rSet.next()) {
+
+				return rSet.getInt("results");
+			}
+			statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 	
 	public static Order update(Order order) {
 		
@@ -98,7 +133,7 @@ public class OrderDAO {
 	}
 
 	public static void delete(Integer orderId) {
-		String sql = "DELETE FROM orders WHERE login=?";
+		String sql = "DELETE FROM orders WHERE order_id=?";
 		Connection connection = ConnectionToDB.getConnection();
 		PreparedStatement statement = null;
 		
