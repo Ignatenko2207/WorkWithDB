@@ -10,7 +10,7 @@ class ConnectionToDB {
 
 	private static final String URL = "jdbc:postgresql://localhost:5432/test_db";
 	private static final String USER = "postgres";
-	private static final String PASSWORD = "248842";
+	private static final String USER_PASSWORD = "248842";
 
 //  private static final String URL = "jdbc:h2:~/test_db";
 //  private static final String USER = "alex";
@@ -20,10 +20,11 @@ class ConnectionToDB {
 //  private static final String USER = "root";
 //  private static final String PASSWORD = "248842";
 
-	static Connection getConnection() {
+	protected static Connection getConnection() {
 
 		try {
-			return DriverManager.getConnection(URL, USER, PASSWORD);
+			
+			return DriverManager.getConnection(URL, USER, USER_PASSWORD);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -31,7 +32,7 @@ class ConnectionToDB {
 		return null;
 	}
 
-	static void closeConnection(Connection connection) {
+	protected static void closeConnection(Connection connection) {
 		try {
 			connection.close();
 		} catch (SQLException e) {
@@ -39,7 +40,7 @@ class ConnectionToDB {
 		}
 	}
 
-	static void closeConnection(Connection connection, PreparedStatement statement) {
+	protected static void closeConnection(Connection connection, PreparedStatement statement) {
 		try {
 			statement.close();
 		} catch (SQLException e) {
@@ -52,7 +53,7 @@ class ConnectionToDB {
 		}
 	}
 
-	static void closeConnection(Connection connection, PreparedStatement statement, ResultSet rSet) {
+	protected static void closeConnection(Connection connection, PreparedStatement statement, ResultSet rSet) {
 		try {
 			rSet.close();
 		} catch (SQLException e) {
